@@ -12,6 +12,7 @@ safariBuild=$(defaults read /Applications/Safari.app/Contents/Info.plist CFBundl
 # Initialize result variables
 
 osPatched=0
+osHalfPatched_meltdown=0
 safariPatched=0
 firefoxPatched=0
 chromePatched=0
@@ -31,10 +32,18 @@ if [[ "$major" > "17C" ]] || ( [[ "$major" = "17C" ]] && [ "$minor" -ge 204 ] );
 	osPatched=1
 	safariPatched=1
 elif [[ "$(/usr/bin/sw_vers -productVersion)" == "10.12"* ]]; then
+	system_profiler SPInstallHistoryDataType | grep 'Security Update 2018-001' > /dev/null
+	if [ "$?" == 0 ]; then
+		osHalfPatched_meltdown=1
+	fi
 	if [ $(versionCompare '12604.4.7.1.6' $safariBuild) -lt 1 ]; then
 		safariPatched=1
 	fi
 elif [[ "$(/usr/bin/sw_vers -productVersion)" == "10.11"* ]]; then
+	system_profiler SPInstallHistoryDataType | grep 'Security Update 2018-001' > /dev/null
+	if [ "$?" == 0 ]; then
+		osHalfPatched_meltdown=1
+	fi
 	if [ $(versionCompare '11604.4.7.1.6' $safariBuild) -lt 1 ]; then
 		safariPatched=1
 	fi
@@ -78,6 +87,8 @@ fi
 echo -n '<result>'
 if [ $osPatched = 1 ]; then
 	echo -n "${prefix}OS Patched"
+elif [ $osHalfPatched_meltdown = 1 ]; then
+	echo -n "${prefix}OS Meltdown-Patched, OS Spectre-Vulnerable"
 else
 	echo -n "${prefix}OS Vulnerable"
 fi
