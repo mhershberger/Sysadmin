@@ -1,5 +1,5 @@
 #!/bin/zsh
-version='1.1.2'
+version='1.1.3'
 # Usage: 'Supported OS.sh' [--verbose ...] [--model <MODEL_ID>] [--device <DEVICE_ID>] [--bridge <BRIDGE_MODEL>] [--board <BOARD_ID]
 #
 # This script will return the supported OS versions for the local machine, based
@@ -169,5 +169,5 @@ EOF
 print -r $js_code | osascript -l JavaScript - "$json" "$ID_LIST" | sort -V 
 } # end of encompassing get_supported_os_list() function
 echo -n '<result>'
-get_supported_os_list
+get_supported_os_list | sed 's/^/"/; s/$/"/'
 echo '</result>'
