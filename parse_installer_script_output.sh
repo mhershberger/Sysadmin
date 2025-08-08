@@ -13,7 +13,7 @@ if [[ "$1" != '' ]]; then
 	fi
 fi
 
-grep -E '.*installer.*: Product archive.*' /var/log/install.log | while read starting_line; do
+zgrep -E '.*installer.*: Product archive.*' "$LOGPATH" | while read starting_line; do
 	pkg_path=$(echo "$starting_line" | awk -F'Product archive ' '{print $2}' | awk -F' trustLevel' '{print $1}')
 	echo "Output from $pkg_path:"
 	pkg_name=$(grep --only-matching '[^/]*\.pkg' <<< "$pkg_path")
